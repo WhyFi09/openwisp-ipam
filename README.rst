@@ -145,16 +145,15 @@ directly in the browser will show the `browsable API interface of Django-REST-Fr
 <https://www.django-rest-framework.org/topics/browsable-api/>`_,
 which makes it even easier to find out the details of each endpoint.
 
+Authentication
+==============
 
-API Authentication
-==================
+See openwisp-users: `authenticating with the user token
+<https://github.com/openwisp/openwisp-users#authenticating-with-the-user-token>`_.
 
-The API authentication is based on session based authentication via  REST framework.
-This authentication scheme uses Django's default session backend for authentication.
-
-.. code-block:: text
-
-    http -a username:password <HTTP verb> <api url>
+When browsing the API via the `Live documentation <#live-documentation>`_
+or the `Browsable web page <#browsable-web-interface>`_, you can also use
+the session authentication by logging in the django admin.
 
 Pagination
 ==========
@@ -453,10 +452,10 @@ Follow the following structure while creating `csv` file to import data.
     <ip-address>,<optional-description>
     <ip-address>,<optional-description>
 
-Setup (Integrate into other Apps)
-*********************************
+Setup (integrate in an existing Django project)
+***********************************************
 
-Add ``openwisp_ipam`` to ``INSTALLED_APPS``:
+The ``settings.py`` of your project should contain the following:
 
 .. code-block:: python
 
@@ -468,18 +467,31 @@ Add ``openwisp_ipam`` to ``INSTALLED_APPS``:
         'django.contrib.admin',
         # rest framework
         'rest_framework',
+        'drf_yasg',
     ]
+
+    AUTH_USER_MODEL = 'openwisp_users.User'
 
 Add the URLs to your main ``urls.py``:
 
 .. code-block:: python
 
+    from django.conf.urls import url
+    from django.contrib import admin
+    from django.urls import include, path
+    from openwisp_users.api.urls import get_api_urls as get_users_api_urls
+
     urlpatterns = [
-        # ... other urls in your project ...
-        url(r'^admin/', admin.site.urls),
-        # openwisp-ipam urls
-        url(r'^', include('openwisp_ipam.urls')),
+        # admin URLs
+        path('admin/', admin.site.urls),
+        # IPAM API
+        path('', include('openwisp_ipam.urls')),
+        # OpenAPI docs
+        path('api/v1/', include('openwisp_utils.api.urls')),
+        # Bearer Authentication API URL
+        url(r'^api/v1/', include((get_users_api_urls(), 'users'), namespace='users')),
     ]
+
 
 Then run:
 

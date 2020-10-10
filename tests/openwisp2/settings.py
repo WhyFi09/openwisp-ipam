@@ -26,9 +26,12 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     # rest framework
     'rest_framework',
+    'rest_framework.authtoken',
     # Only for developement
     'django_extensions',
     'drf_yasg',
+    # Other dependencies
+    'reversion',
 ]
 
 SITE_ID = 1
@@ -80,10 +83,11 @@ USE_L10N = True
 USE_TZ = True
 STATIC_URL = '/static/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+OPENWISP_USERS_AUTH_API = True
 
 if TESTING:
-    OPENWISP_ORGANIZATON_USER_ADMIN = True
-    OPENWISP_ORGANIZATON_OWNER_ADMIN = True
+    OPENWISP_ORGANIZATION_USER_ADMIN = True
+    OPENWISP_ORGANIZATION_OWNER_ADMIN = True
 
 if os.environ.get('SAMPLE_APP', False):
     INSTALLED_APPS.remove('openwisp_ipam')
